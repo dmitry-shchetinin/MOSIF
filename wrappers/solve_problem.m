@@ -171,15 +171,16 @@ if strcmp(model.type,'NLP') && isempty(Js) && ~isempty(model.funcs.con)
 end
 
 % estimate Hessian sparsity pattern if needed
-if isCP
-    Hs = model.Q;
-    Hs(Hs ~= 0) = 1;
-elseif ~isempty(model.Hs)
-    Hs = model.Hs;
-elseif strcmp(model.type,'NLP') && ~isempty(model.funcs.h_con)
-    Hs = Hessian_sparsity_pattern(model);
-else 
-    Hs = [];
+if strcmp(options.solver,'ipopt') || strcmp(options.solver,'knitro')
+    if isCP
+        Hs = set_entries_to_ones(model.Q);
+    elseif ~isempty(model.Hs)
+        Hs = model.Hs;
+    elseif strcmp(model.type,'NLP') && ~isempty(model.funcs.h_con)
+        Hs = Hessian_sparsity_pattern(model);
+    else
+        Hs = [];
+    end
 end
 
 % set infinite bounds on linear constraints if not provided
