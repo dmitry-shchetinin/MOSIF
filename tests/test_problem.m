@@ -15,3 +15,5 @@ opt.solver = 'mosek';
 tic;
 [result, extra] = solve_problem(model, opt);
 time = toc;
+
+%we are doing smth
