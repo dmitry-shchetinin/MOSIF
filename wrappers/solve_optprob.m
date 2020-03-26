@@ -1,4 +1,4 @@
-function [result, extra] = solve_problem(model, options)
+function [result, extra] = solve_optprob(model, options)
 %% Wrapper function to various optimization solvers
 % supported problem types
 % NLP
@@ -51,29 +51,6 @@ function [result, extra] = solve_problem(model, options)
 %                       provided, it will be numerically estimated)
 %   .userdata         - structure containing data needed to compute values 
 %                       of nonlinear functions
-%  options            - structure containing various options for solving 
-%                       the problem. The fields are:
-%   .solver           - solver name. Supported and tested options include
-%                        TOMLAB: 'snopt', 'knitro', 'minos', 'npsol'
-%                        OPTI:   'ipopt' (default), 'clp'
-%                        'mosek'
-%   .printlevel       - level of command window printing ([] or 0 to 100,
-%                       depending on the solver):
-%                        [] - let each solver use its default (default)
-%                        0 - nothing printed
-%                        max - full info printed
-%   .SOL              - row vector whose entries are parameter values of 
-%                       SOL solvers (snopt, minos, npsol). Refer to solver 
-%                       manuals for details
-%   .KNITRO           - structure whose fields are options for TOMLAB's
-%                       KNITRO. Refer to TOMLAB KNITRO manual for details
-%   .IPOPT            - structure whose fields are options for IPOPT. Refer 
-%                       to IPOPT manual for details
-%   .CLP              - structure whose field are options for CLP. Refer to
-%                       CLP manual for details
-%   .MOSEK            - structure whose field are options for MOSEK. Refer 
-%                       to MOSEK manual for details
-% 
 %OUTPUTS:
 %  result             - structure containing the following fields:
 %   .x                - value of variable vector at solution
