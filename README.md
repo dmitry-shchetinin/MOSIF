@@ -1,2 +1,2 @@
-# MOW
-Matlab wrapper for optimization problems
+# MOSIF
+Matlab Optimization Solver InterFace
