@@ -1,3 +1,4 @@
 *.mexw64
 *.asv
+**/*.asv
 *.orig

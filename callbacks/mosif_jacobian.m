@@ -17,8 +17,11 @@ if ~auxdata.isNLP && ~isempty(auxdata.quadcon)
     % jacobian matrix
     Jquadcon = auxdata.Js_quadcon;
     n_quadcon = length(auxdata.quadcon);
+    n = length(x);
     for i = 1:n_quadcon
-        Jquadcon(i, :) = Jquadcon(i, :) + (2 * sparse(auxdata.quadcon(i).Qc * x) + auxdata.quadcon(i).qc)';
+        tmp = (2 * sparse(auxdata.quadcon(i).Qc * x) + auxdata.quadcon(i).qc)';
+        [~, ic, v] = find(tmp);
+        Jquadcon = Jquadcon + sparse(i*ones(length(v),1), ic, v, n_quadcon, n);
     end
     Jquadcon = Jquadcon - auxdata.Js_quadcon;
 else
