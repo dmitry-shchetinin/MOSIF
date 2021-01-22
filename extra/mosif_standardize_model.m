@@ -20,8 +20,12 @@ end
 
 %% make sure all quadratic constraints have sparse matrices and vectors
 for i = 1:length(model.quadcon)
-    model.quadcon(i).Qc = sparse(model.quadcon(i).Qc + model.quadcon(i).Qc') / 2; % make sure it's symmetric
-    model.quadcon(i).qc = sparse(model.quadcon(i).qc);
+    if ~issparse(model.quadcon(i).Qc) || ~issymmetric(model.quadcon(i).Qc)
+        model.quadcon(i).Qc = sparse(model.quadcon(i).Qc + model.quadcon(i).Qc') / 2; % make sure it's symmetric
+    end
+    if ~issparse(model.quadcon(i).qc)
+        model.quadcon(i).qc = sparse(model.quadcon(i).qc);
+    end
     model.quadcon(i).qc = make_column_vector(model.quadcon(i).qc);
 end
 
@@ -52,7 +56,6 @@ else
 end
 model = populate_field(model,'cl', -inf(nn,1));
 model = populate_field(model,'cu', inf(nn,1));
-
 
 end
 

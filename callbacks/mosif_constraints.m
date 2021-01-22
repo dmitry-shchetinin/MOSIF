@@ -15,10 +15,12 @@ end
 
 % add quadratic constraints
 if ~auxdata.isNLP && ~isempty(auxdata.quadcon)
-    n_quadcon = length(auxdata.quadcon);
+    quadcon = auxdata.quadcon;
+    n_quadcon = length(quadcon);
     cquadcon = zeros(n_quadcon, 1);
     for i = 1:n_quadcon
-        cquadcon(i) = x' * auxdata.quadcon(i).Qc * x + auxdata.quadcon(i).qc' * x;
+        xc = x(quadcon(i).x_idx); % entries of x present in quadratic part of the constraint
+        cquadcon(i) = xc' * quadcon(i).Qc * xc + quadcon(i).qc' * x;
     end
 else
     cquadcon = [];

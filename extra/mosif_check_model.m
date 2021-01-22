@@ -1,4 +1,4 @@
-function model = mosif_check_model(model, solver)
+function model = mosif_check_model(model, solvers, solver)
 
 %% check if the solver exists
 if exist(solver, 'file') ~= 3
@@ -7,14 +7,11 @@ end
 
 %% check if the solver is suitable for the given problem
 % create lists of different solvers
-NLP_solvers = ["ipopt", "knitro", "snopt"];
-QCQP_solvers = ["gurobi", "mosek", "cplex", "ecos"];
-MIP_solvers = ["gurobi", "mosek", "cplex"];
-if ~isempty(model.funcs.obj) && all(NLP_solvers ~= solver)
+if ~isempty(model.funcs.obj) && all(solvers.nlp ~= solver)
     error('Solver %s cannot handle NLP problems', solver);
-elseif ~isempty(model.quadcon) && all(QCQP_solvers ~= solver) && all(NLP_solvers ~= solver)
+elseif ~isempty(model.quadcon) && all(solvers.qcqp ~= solver) && all(solvers.nlp ~= solver)
     error('Solver %s cannot handle quadratically-constrained problems', solver);
-elseif any(model.xtype ~= 'C') && all(MIP_solvers ~= solver)
+elseif any(model.xtype ~= 'C') && all(solvers.mip ~= solver)
     error('Solver %s cannot handle MIP problems', solver);
 end
 

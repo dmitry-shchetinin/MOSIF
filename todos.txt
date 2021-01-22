@@ -1,4 +1,0 @@
-add options check
-add model check (input dimensions)
-add solver / model compatibility check
-add quadratic to conic constraints translation

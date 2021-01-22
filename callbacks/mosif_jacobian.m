@@ -11,23 +11,23 @@ end
 
 % from quadratic constraints
 if ~auxdata.isNLP && ~isempty(auxdata.quadcon)
-    % in order not to change sparsity pattern each time, we'll use a trick
-    % here: first create jacobian from a sparsity pattern, and then
-    % subtract the sparsity pattern so that we end up with the actual
-    % jacobian matrix
-    Jquadcon = auxdata.Js_quadcon;
-    n_quadcon = length(auxdata.quadcon);
+    quadcon = auxdata.quadcon;
+    n_quadcon = length(quadcon);
     n = length(x);
+    % get part of Jacobian related to linear part of constraints
+    Jquadcon = [quadcon.qc]';
+    % get part of Jacobian related to quadratic part of constraints
+    Jvals = cell(n_quadcon, 1);
     for i = 1:n_quadcon
-        tmp = (2 * sparse(auxdata.quadcon(i).Qc * x) + auxdata.quadcon(i).qc)';
-        [~, ic, v] = find(tmp);
-        Jquadcon = Jquadcon + sparse(i*ones(length(v),1), ic, v, n_quadcon, n);
+        Jvals{i} = 2 * quadcon(i).Qc * x(quadcon(i).x_idx);
     end
-    Jquadcon = Jquadcon - auxdata.Js_quadcon;
+    % combine the two parts together
+    Jquadcon = Jquadcon + sparse([quadcon.Jrows], [quadcon.x_idx], ...
+                                 cell2mat(Jvals), n_quadcon, n);
 else
     Jquadcon = [];
 end
 
-% combine
+% combine all part of Jacobian
 J = [Jnonlin; Jquadcon; Jlin];
 end

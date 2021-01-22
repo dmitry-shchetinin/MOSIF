@@ -13,7 +13,7 @@ for i = 1:n_cones
         idx1 = model.cones(i).idx_ge(1);
         idx2 = model.cones(i).idx_ge(2);
         model.quadcon(n_quad+i).Qc = sparse([idx1; idx2; idx], [idx2; idx1; idx], ...
-                                          [-0.5; -0.5; ones(length(idx),1)], n, n);
+                                            [-0.5; -0.5; ones(length(idx),1)], n, n);
     end
     model.quadcon(n_quad+i).qc = sparse(n,1);
     model.quadcon(n_quad+i).rhs = 0;

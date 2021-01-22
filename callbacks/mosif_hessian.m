@@ -1,5 +1,6 @@
 function H = mosif_hessian(x, sigma, lambda, auxdata)
-H = sparse(length(x), length(x));
+n = length(x);
+H = sparse(n, n);
 % add hessian of objective
 if ~auxdata.isNLP
     H = H + 2 * sigma * auxdata.Q;
@@ -13,10 +14,13 @@ if ~isempty(auxdata.A)
     lambda = lambda(1:end - nl);
 end
 if ~auxdata.isNLP && ~isempty(auxdata.quadcon)
-    n_quadcon = length(auxdata.quadcon);
+    quadcon = auxdata.quadcon;
+    n_quadcon = length(quadcon);
     for i = 1:n_quadcon
-        H = H + 2 * lambda(i) * auxdata.quadcon(i).Qc;
+        quadcon(i).Hvals =  2 * lambda(i) * quadcon(i).Hvals;
     end
+    H = H + sparse([quadcon.Hrows], [quadcon.Hcols], ...
+                   [quadcon.Hvals], n, n);
 elseif auxdata.isNLP && ~isempty(auxdata.funcs.hess_con)
     H = H + feval(auxdata.funcs.hess_con, x, lambda, auxdata);
 end
