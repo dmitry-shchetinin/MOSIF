@@ -56,7 +56,11 @@ function result = solve_optprob(model, options)
 %   .quadcon          - structure array representing quadratic constraints.
 %                       Each element models a single constraint and is a 
 %                       structure with the following fields:
-%     .Qc             - sparse quadratic coefficient matrix
+%     .Qc             - sparse quadratic coefficient matrix. Alternatively,
+%                       it can be represented by three vectors (see below)
+%     .rows           - vector of row indices of nonzero entries of Qc
+%     .cols           - vector of column indices of nonzero entries of Qc
+%     .vals           - vector of values of nonzero entries of Qc
 %     .qc             - sparse linear coefficient vector
 %     .rhs            - right-hand side scalar
 %   .cones            - structure array representing second-order cone 

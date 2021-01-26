@@ -69,7 +69,9 @@ end
 %% populate fields describing quadratic constraints
 n_quadcon = length(model.quadcon);
 for i = 1:n_quadcon
-    gurmod.quadcon(i).Qc = model.quadcon(i).Qc;
+    gurmod.quadcon(i).Qrow = model.quadcon(i).rows;
+    gurmod.quadcon(i).Qcol = model.quadcon(i).cols;
+    gurmod.quadcon(i).Qval = model.quadcon(i).vals;
     gurmod.quadcon(i).q = model.quadcon(i).qc;
     gurmod.quadcon(i).rhs = model.quadcon(i).rhs;
 end

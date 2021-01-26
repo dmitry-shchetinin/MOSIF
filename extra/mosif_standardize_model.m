@@ -18,15 +18,25 @@ for i = 1:length(vector_names)
     model.(name) = make_column_vector(model.(name));
 end
 
-%% make sure all quadratic constraints have sparse matrices and vectors
+%% make sure all quadratic constraints have standard form
+nv = length(model.x0);
 for i = 1:length(model.quadcon)
-    if ~issparse(model.quadcon(i).Qc) || ~issymmetric(model.quadcon(i).Qc)
-        model.quadcon(i).Qc = sparse(model.quadcon(i).Qc + model.quadcon(i).Qc') / 2; % make sure it's symmetric
+    % make sure coefficient matrix is symmetric
+    if isfield(model.quadcon(i), 'Qc') && ~isempty(model.quadcon(i).Qc)
+        tmp = sparse(model.quadcon(i).Qc + model.quadcon(i).Qc') / 2;
+    else
+        tmp = sparse([model.quadcon(i).rows; model.quadcon(i).cols], ...
+                     [model.quadcon(i).cols; model.quadcon(i).rows], ...
+                     [model.quadcon(i).vals; model.quadcon(i).vals]/2, nv, nv);
     end
-    if ~issparse(model.quadcon(i).qc)
-        model.quadcon(i).qc = sparse(model.quadcon(i).qc);
-    end
-    model.quadcon(i).qc = make_column_vector(model.quadcon(i).qc);
+    % store it in coordinate form
+    [rows, cols, vals] = find(tmp);
+    model.quadcon(i).rows = rows';
+    model.quadcon(i).cols = cols';
+    model.quadcon(i).vals = vals';
+    model.quadcon(i).Qc = [];
+    % make coefficient vector sparse column vector
+    model.quadcon(i).qc = sparse(make_column_vector(model.quadcon(i).qc));
 end
 
 %% make sure all conic constraints are defined by column vectors

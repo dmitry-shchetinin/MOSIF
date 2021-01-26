@@ -1,15 +1,15 @@
 function J = mosif_jacobian(x, auxdata)
-% from linear constraints
+%% from linear constraints
 Jlin = auxdata.A;
 
-% from nonlinear general constraints
+%% from nonlinear general constraints
 if auxdata.isNLP && ~isempty(auxdata.funcs.jac)
     Jnonlin = feval(auxdata.funcs.jac, x, auxdata);
 else
     Jnonlin = [];
 end
 
-% from quadratic constraints
+%% from quadratic constraints
 if ~auxdata.isNLP && ~isempty(auxdata.quadcon)
     quadcon = auxdata.quadcon;
     n_quadcon = length(quadcon);
@@ -28,6 +28,6 @@ else
     Jquadcon = [];
 end
 
-% combine all part of Jacobian
+%% combine all part of Jacobian
 J = [Jnonlin; Jquadcon; Jlin];
 end

@@ -1,19 +1,19 @@
 function c = mosif_constraints(x, auxdata)
-% add linear constraints
+%% add linear constraints
 if ~isempty(auxdata.A)
     clin = auxdata.A * x;
 else
     clin = [];
 end
 
-% add nonlinear general constraints
+%% add nonlinear general constraints
 if auxdata.isNLP && ~isempty(auxdata.funcs.con)
     cnonlin = feval(auxdata.funcs.con, x, auxdata);
 else
     cnonlin = [];
 end
 
-% add quadratic constraints
+%% add quadratic constraints
 if ~auxdata.isNLP && ~isempty(auxdata.quadcon)
     quadcon = auxdata.quadcon;
     n_quadcon = length(quadcon);
@@ -26,6 +26,6 @@ else
     cquadcon = [];
 end
 
-% combine into one vector
+%% combine into one vector
 c = [cnonlin; cquadcon; clin];
 end

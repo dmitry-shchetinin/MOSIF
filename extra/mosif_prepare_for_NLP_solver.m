@@ -36,16 +36,11 @@ model.cu = [model.cu; [model.quadcon.rhs]'];
 % this is done to enable faster evaluation of constraints and their
 % derivatives in callback functions of NLP solver
 for i = 1:n_quadcon
-    % get nonzeros indices and values of Qc matrix
-    [Hrows, Hcols, Hvals] = find(model.quadcon(i).Qc);
-    model.quadcon(i).Hrows = Hrows';
-    model.quadcon(i).Hcols = Hcols';
-    model.quadcon(i).Hvals = Hvals';
     % get indices of entries of vector x that correspond to QC nonzeros
-    x_idx = unique(Hrows);
-    model.quadcon(i).x_idx = x_idx';
+    x_idx = unique(model.quadcon(i).cols);
+    model.quadcon(i).x_idx = x_idx;
     % reduce matrix Qc to its nonzero block
-    model.quadcon(i).Qc = sparse(model.quadcon(i).Qc(x_idx, x_idx));
+    model.quadcon(i).Qc = extract_nonzero_block(model.quadcon(i));
     % record row indices for part of sparse matrix that defines i-th
     % constraint in Jacobian of quadratic constraints
     model.quadcon(i).Jrows = i * ones(1, length(x_idx));
@@ -62,8 +57,8 @@ model.Js = model.Js + sparse(rows, cols, vals, n_quadcon, n);
 model.Js = mosif_set_entries_to_ones(model.Js);
 
 %% get Hessian sparsity pattern
-rows = [model.quadcon.Hrows];
-cols = [model.quadcon.Hcols];
+rows = [model.quadcon.rows];
+cols = [model.quadcon.cols];
 vals = ones(length(rows), 1);
 Hs_quadcon = sparse(rows, cols, vals, n, n);
 if isempty(model.Hs)
@@ -106,4 +101,19 @@ function Hs = Hessian_sparsity_pattern(model)
             abs(feval(model.funcs.hess_con, rand(nv,1), rand(nn,1), model));
     end
     Hs = mosif_set_entries_to_ones(sparse(Hs));
+end
+
+
+%% extract_nonzero_block of sparse matrix of quadratic constraint
+function H = extract_nonzero_block(quadcon)
+    [x_idx, rows, cols] = deal(quadcon.x_idx, quadcon.rows, quadcon.cols);
+    n = length(quadcon.rows);
+    nx = length(x_idx);
+    rows_reduced = zeros(n ,1);
+    cols_reduced = zeros(n ,1);
+    for i = 1:n
+        rows_reduced(i) = find(x_idx == rows(i), 1);
+        cols_reduced(i) = find(x_idx == cols(i), 1);
+    end
+    H = sparse(rows_reduced, cols_reduced, quadcon.vals, nx, nx);
 end
